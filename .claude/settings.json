@@ -21,11 +21,13 @@
       "Bash(git commit*)",
       "Bash(git log*)",
       "Bash(git branch*)",
-      "Bash(git show*)"
+      "Bash(git show*)",
+      "Bash(git push*)"
     ],
     "deny": [
       "Bash(rm -rf*)",
-      "Bash(git push*)",
+      "Bash(git push --force*)",
+      "Bash(git push -f*)",
       "Bash(git reset --hard*)",
       "Bash(git clean*)"
     ]
