@@ -1,11 +1,11 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { getInitDataRaw } from '../telegram';
 
 export const PASS = 0.7;
-const STORAGE_KEY = 'tg-cnc:progress:v1';
+const API_BASE = 'https://tg-cnc-api.lbvfdgfdfgdf.workers.dev';
 const XP_PER_CORRECT = 5;
 const XP_PASS_BONUS = 10;
 const XP_PER_LEVEL = 200;
-const RECENT_ATTEMPTS_LIMIT = 10;
 
 export interface LessonProgress {
   best: number;
@@ -34,34 +34,26 @@ function emptyState(): ProgressState {
   return { lessons: {}, activityDays: [], recentAttempts: [] };
 }
 
-function loadState(): ProgressState {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return emptyState();
-    const parsed = JSON.parse(raw) as Partial<ProgressState>;
-    return {
-      lessons: parsed.lessons ?? {},
-      activityDays: parsed.activityDays ?? [],
-      recentAttempts: parsed.recentAttempts ?? [],
-    };
-  } catch {
-    return emptyState();
-  }
+interface ApiProgressResponse {
+  lessons: Record<string, LessonProgress>;
+  recentAttempts: AttemptRecord[];
+  activityDays: string[];
 }
 
-function saveState(state: ProgressState): void {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-  } catch {
-    // localStorage unavailable (private mode, quota) — progress just won't persist.
-  }
+async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
+  const res = await fetch(API_BASE + path, {
+    ...init,
+    headers: {
+      ...(init?.headers ?? {}),
+      Authorization: `tma ${getInitDataRaw()}`,
+      'Content-Type': 'application/json',
+    },
+  });
+  if (!res.ok) throw new Error(`API ${path} failed: ${res.status}`);
+  return res.json() as Promise<T>;
 }
 
-function todayKey(date = new Date()): string {
-  return date.toISOString().slice(0, 10);
-}
-
-function applyAttempt(
+function applyAttemptLocally(
   state: ProgressState,
   lessonId: string,
   score: number,
@@ -79,13 +71,13 @@ function applyAttempt(
     passed: (prev?.passed ?? false) || passed,
   };
 
-  const today = todayKey();
+  const today = next.lastAt.slice(0, 10);
   const activityDays = state.activityDays.includes(today)
     ? state.activityDays
     : [...state.activityDays, today];
 
   const attempt: AttemptRecord = { lessonId, at: next.lastAt, score, total };
-  const recentAttempts = [attempt, ...state.recentAttempts].slice(0, RECENT_ATTEMPTS_LIMIT);
+  const recentAttempts = [attempt, ...state.recentAttempts].slice(0, 10);
 
   return {
     lessons: { ...state.lessons, [lessonId]: next },
@@ -94,15 +86,37 @@ function applyAttempt(
   };
 }
 
+/**
+ * Progress lives on the backend (Cloudflare Worker + D1), keyed by the caller's Telegram
+ * user id (verified server-side from signed `initData` — see worker/src/telegramAuth.ts).
+ * Outside a real Telegram client `initData` is empty, so there's nothing to authenticate
+ * with — state then stays local-only for the session (no persistence), which is expected
+ * for plain-browser dev/testing.
+ */
 export function useProgress() {
-  const [state, setState] = useState<ProgressState>(loadState);
+  const [state, setState] = useState<ProgressState>(emptyState);
+
+  useEffect(() => {
+    if (!getInitDataRaw()) return;
+    apiFetch<ApiProgressResponse>('/api/progress')
+      .then((data) =>
+        setState({
+          lessons: data.lessons,
+          recentAttempts: data.recentAttempts,
+          activityDays: data.activityDays,
+        }),
+      )
+      .catch((err) => console.error('Failed to load progress:', err));
+  }, []);
 
   function recordAttempt(lessonId: string, score: number, total: number) {
-    setState((prev) => {
-      const next = applyAttempt(prev, lessonId, score, total);
-      saveState(next);
-      return next;
-    });
+    setState((prev) => applyAttemptLocally(prev, lessonId, score, total));
+    if (getInitDataRaw()) {
+      apiFetch('/api/progress/attempt', {
+        method: 'POST',
+        body: JSON.stringify({ lessonId, score, total }),
+      }).catch((err) => console.error('Failed to sync attempt:', err));
+    }
   }
 
   return { state, recordAttempt };
@@ -140,10 +154,11 @@ export function computeSolved(state: ProgressState): number {
 
 export function computeStreak(state: ProgressState): number {
   const set = new Set(state.activityDays);
+  const toKey = (d: Date) => d.toISOString().slice(0, 10);
   let cursor = new Date();
-  if (!set.has(todayKey(cursor))) cursor = new Date(cursor.getTime() - 86_400_000);
+  if (!set.has(toKey(cursor))) cursor = new Date(cursor.getTime() - 86_400_000);
   let streak = 0;
-  while (set.has(todayKey(cursor))) {
+  while (set.has(toKey(cursor))) {
     streak++;
     cursor = new Date(cursor.getTime() - 86_400_000);
   }
@@ -156,7 +171,7 @@ export function computeWeekActivity(state: ProgressState): { key: string; active
   const days: { key: string; active: boolean }[] = [];
   for (let i = 6; i >= 0; i--) {
     const d = new Date(Date.now() - i * 86_400_000);
-    const key = todayKey(d);
+    const key = d.toISOString().slice(0, 10);
     days.push({ key, active: set.has(key) });
   }
   return days;

@@ -34,6 +34,7 @@ interface TelegramWebApp {
   expand: () => void;
   colorScheme: 'light' | 'dark';
   themeParams: TelegramThemeParams;
+  initData: string;
   initDataUnsafe: { user?: TelegramUser };
   BackButton: TelegramBackButton;
   HapticFeedback: TelegramHapticFeedback;
@@ -98,6 +99,13 @@ export function setBackButtonVisible(visible: boolean, onClick: () => void): voi
 
 export function hapticNotify(type: 'success' | 'error'): void {
   window.Telegram?.WebApp.HapticFeedback?.notificationOccurred(type);
+}
+
+/** Raw signed initData string, sent as the `Authorization: tma <initData>` header on
+ *  API requests so the backend can verify it actually came from Telegram. Empty when
+ *  the app isn't running inside a real Telegram client (e.g. plain browser testing). */
+export function getInitDataRaw(): string {
+  return window.Telegram?.WebApp.initData ?? '';
 }
 
 export function getTelegramUser(): { name: string; photoUrl: string | null } | null {
