@@ -1,0 +1,7 @@
+.shell {
+  display: flex;
+  flex-direction: column;
+  height: 100dvh;
+  background: var(--a-bg);
+  color: var(--a-text);
+}

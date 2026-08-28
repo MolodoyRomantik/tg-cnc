@@ -1,0 +1,62 @@
+/* Design tokens — see design_handoff_cnc_trainer/README.md §Design Tokens.
+   Light values live on bare :root; dark overrides both the OS preference and
+   Telegram's own colorScheme (set as [data-color-scheme] by telegram.ts), so a
+   Telegram-reported theme always wins over prefers-color-scheme when both apply. */
+:root {
+  --a-bg: #f2f2f7;
+  --a-surface: #ffffff;
+  --a-fill: rgba(120, 120, 128, 0.12);
+  --a-hairline: rgba(60, 60, 67, 0.13);
+  --a-text: #000000;
+  --a-text2: rgba(60, 60, 67, 0.6);
+  --a-text3: rgba(60, 60, 67, 0.28);
+  --a-accent: #e8590c;
+  --a-accent-soft: rgba(232, 89, 12, 0.1);
+  --a-steel: #48535e;
+  --a-steel-soft: rgba(72, 83, 94, 0.1);
+  --a-ok: #1c9a5f;
+  --a-ok-soft: rgba(28, 154, 95, 0.12);
+  --a-bad: #d7373f;
+  --a-bad-soft: rgba(215, 55, 63, 0.1);
+
+  --a-font-ui: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', system-ui, sans-serif;
+  --a-font-mono: 'JetBrains Mono', ui-monospace, monospace;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-color-scheme='light']) {
+    --a-bg: #000000;
+    --a-surface: #1c1c1e;
+    --a-fill: rgba(120, 120, 128, 0.24);
+    --a-hairline: rgba(84, 84, 88, 0.5);
+    --a-text: #ffffff;
+    --a-text2: rgba(235, 235, 245, 0.6);
+    --a-text3: rgba(235, 235, 245, 0.28);
+    --a-accent: #ff8a3d;
+    --a-accent-soft: rgba(255, 138, 61, 0.16);
+    --a-steel: #a9b4bf;
+    --a-steel-soft: rgba(169, 180, 191, 0.14);
+    --a-ok: #30d158;
+    --a-ok-soft: rgba(48, 209, 88, 0.16);
+    --a-bad: #ff453a;
+    --a-bad-soft: rgba(255, 69, 58, 0.16);
+  }
+}
+
+:root[data-color-scheme='dark'] {
+  --a-bg: #000000;
+  --a-surface: #1c1c1e;
+  --a-fill: rgba(120, 120, 128, 0.24);
+  --a-hairline: rgba(84, 84, 88, 0.5);
+  --a-text: #ffffff;
+  --a-text2: rgba(235, 235, 245, 0.6);
+  --a-text3: rgba(235, 235, 245, 0.28);
+  --a-accent: #ff8a3d;
+  --a-accent-soft: rgba(255, 138, 61, 0.16);
+  --a-steel: #a9b4bf;
+  --a-steel-soft: rgba(169, 180, 191, 0.14);
+  --a-ok: #30d158;
+  --a-ok-soft: rgba(48, 209, 88, 0.16);
+  --a-bad: #ff453a;
+  --a-bad-soft: rgba(255, 69, 58, 0.16);
+}

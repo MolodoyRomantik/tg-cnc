@@ -1,0 +1,267 @@
+.page {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.scroll {
+  flex: 1;
+  overflow: auto;
+  padding: 20px 16px 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.scoreRow {
+  display: flex;
+  align-items: baseline;
+  gap: 5px;
+}
+
+.score {
+  font-size: 70px;
+  line-height: 0.88;
+  font-weight: 700;
+  letter-spacing: -3.6px;
+  font-family: var(--a-font-mono);
+}
+
+.scoreTotal {
+  font-size: 23px;
+  font-weight: 500;
+  letter-spacing: -1px;
+  color: var(--a-text3);
+  font-family: var(--a-font-mono);
+}
+
+.gradeTitle {
+  margin-top: 11px;
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.6px;
+}
+
+.gradeText {
+  margin: 5px 12px 0;
+  text-align: center;
+  font-size: 14.5px;
+  line-height: 1.4;
+  color: var(--a-text2);
+  text-wrap: pretty;
+}
+
+.reviewHead {
+  width: 100%;
+  margin-top: 16px;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding: 0 3px;
+}
+
+.sectionLabel {
+  font-size: 12.5px;
+  letter-spacing: 0.2px;
+  text-transform: uppercase;
+  color: var(--a-text2);
+}
+
+.xp {
+  font-family: var(--a-font-mono);
+  font-size: 11.5px;
+  color: var(--a-accent);
+}
+
+.reviewStrip {
+  width: 100%;
+  margin-top: 7px;
+  display: flex;
+  gap: 4px;
+}
+
+.reviewCell {
+  flex: 1;
+  height: 32px;
+  border: none;
+  border-radius: 9px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--a-font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.reviewNum {
+  font-size: 9px;
+  font-weight: 500;
+  opacity: 0.75;
+}
+
+.reviewOk {
+  background: var(--a-ok-soft);
+  color: var(--a-ok);
+}
+
+.reviewBad {
+  background: var(--a-bad-soft);
+  color: var(--a-bad);
+}
+
+.wrongList {
+  width: 100%;
+  margin-top: 9px;
+  border-radius: 14px;
+  background: var(--a-surface);
+  overflow: hidden;
+}
+
+.wrongRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 10px 13px;
+  background: none;
+  border: none;
+  border-top: 0.5px solid var(--a-hairline);
+  cursor: pointer;
+  text-align: left;
+  color: var(--a-text);
+  font-family: inherit;
+}
+
+.wrongNum {
+  width: 26px;
+  height: 26px;
+  flex-shrink: 0;
+  border-radius: 8px;
+  background: var(--a-bad-soft);
+  color: var(--a-bad);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--a-font-mono);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.wrongText {
+  flex: 1;
+  font-size: 14px;
+  line-height: 1.3;
+  letter-spacing: -0.3px;
+}
+
+.chevron {
+  font-size: 14px;
+  color: var(--a-text3);
+}
+
+.statsCard {
+  width: 100%;
+  margin-top: 9px;
+  border-radius: 14px;
+  background: var(--a-surface);
+  overflow: hidden;
+}
+
+.statRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  font-size: 14.5px;
+  letter-spacing: -0.3px;
+}
+
+.statLabel {
+  color: var(--a-text2);
+}
+
+.statValue {
+  font-family: var(--a-font-mono);
+  font-weight: 600;
+}
+
+.statusCard {
+  width: 100%;
+  margin-top: 9px;
+  padding: 12px 14px;
+  border-radius: 14px;
+}
+
+.statusTitle {
+  font-size: 12.5px;
+  font-weight: 600;
+  margin-bottom: 3px;
+}
+
+.statusText {
+  font-size: 14px;
+  line-height: 1.4;
+  letter-spacing: -0.2px;
+}
+
+.footer {
+  flex-shrink: 0;
+  padding: 8px 16px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.retryWrong {
+  width: 100%;
+  height: 44px;
+  border: none;
+  border-radius: 14px;
+  background: var(--a-bad-soft);
+  color: var(--a-bad);
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.3px;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.primary {
+  width: 100%;
+  height: 50px;
+  border: none;
+  border-radius: 14px;
+  background: var(--a-accent);
+  color: #fff;
+  font-size: 16.5px;
+  font-weight: 600;
+  letter-spacing: -0.4px;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.row {
+  display: flex;
+  gap: 8px;
+}
+
+.secondary {
+  flex: 1;
+  height: 46px;
+  border: none;
+  border-radius: 14px;
+  background: var(--a-steel-soft);
+  color: var(--a-text);
+  font-size: 15.5px;
+  font-weight: 500;
+  letter-spacing: -0.35px;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.row .secondary:last-child {
+  background: var(--a-fill);
+}

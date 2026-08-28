@@ -1,0 +1,328 @@
+.page {
+  flex: 1;
+  overflow: auto;
+  padding: 14px 16px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.page > * {
+  flex-shrink: 0;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+}
+
+.avatar {
+  width: 62px;
+  height: 62px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: var(--a-fill);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.avatarImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.avatarInitial {
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--a-text2);
+}
+
+.headerBody {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.name {
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.6px;
+}
+
+.subtitle {
+  font-size: 13px;
+  color: var(--a-text2);
+}
+
+.levelChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 3px;
+  padding: 3px 8px;
+  border-radius: 8px;
+  background: var(--a-accent-soft);
+  color: var(--a-accent);
+  font-size: 11.5px;
+  font-weight: 600;
+  align-self: flex-start;
+}
+
+.xpCard {
+  padding: 12px 14px;
+  border-radius: 15px;
+  background: var(--a-surface);
+}
+
+.xpRow {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 7px;
+}
+
+.xpLabel {
+  font-size: 13px;
+  color: var(--a-text2);
+}
+
+.xpValue {
+  font-family: var(--a-font-mono);
+  font-size: 12.5px;
+  font-weight: 600;
+}
+
+.xpTrack {
+  height: 6px;
+  border-radius: 3px;
+  background: var(--a-fill);
+  overflow: hidden;
+}
+
+.xpFill {
+  height: 100%;
+  border-radius: 3px;
+  background: var(--a-accent);
+}
+
+.statsGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.statTile {
+  padding: 11px 13px;
+  border-radius: 14px;
+  background: var(--a-surface);
+}
+
+.statValue {
+  font-family: var(--a-font-mono);
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: -0.6px;
+}
+
+.statLabel {
+  font-size: 12px;
+  color: var(--a-text2);
+  margin-top: 1px;
+}
+
+.sectionsCard {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  padding: 12px 14px;
+  border-radius: 15px;
+  background: var(--a-surface);
+}
+
+.sectionsHead {
+  font-size: 12.5px;
+  letter-spacing: 0.2px;
+  text-transform: uppercase;
+  color: var(--a-text2);
+}
+
+.sectionRow {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.sectionRowHead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.sectionName {
+  font-size: 14.5px;
+  letter-spacing: -0.3px;
+}
+
+.sectionCount {
+  font-family: var(--a-font-mono);
+  font-size: 11.5px;
+  color: var(--a-text2);
+}
+
+.sectionTrack {
+  height: 4px;
+  border-radius: 2px;
+  background: var(--a-fill);
+  overflow: hidden;
+}
+
+.sectionFill {
+  height: 100%;
+  border-radius: 2px;
+}
+
+.badgeRow {
+  display: flex;
+  gap: 8px;
+}
+
+.badge {
+  flex: 1;
+  padding: 11px 10px;
+  border-radius: 14px;
+  background: var(--a-surface);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+}
+
+.badgeGlyph {
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  background: var(--a-accent-soft);
+  color: var(--a-accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--a-font-mono);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.badgeLabel {
+  font-size: 11.5px;
+  text-align: center;
+  line-height: 1.25;
+  color: var(--a-text2);
+}
+
+.weekCard {
+  padding: 12px 14px;
+  border-radius: 15px;
+  background: var(--a-surface);
+}
+
+.weekHead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 9px;
+}
+
+.weekCount {
+  font-family: var(--a-font-mono);
+  font-size: 11.5px;
+  color: var(--a-text2);
+}
+
+.weekBars {
+  display: flex;
+  align-items: flex-end;
+  gap: 6px;
+  height: 44px;
+}
+
+.weekBarCol {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+}
+
+.weekBar {
+  width: 100%;
+  border-radius: 4px;
+}
+
+.weekLabel {
+  font-size: 10px;
+  color: var(--a-text3);
+}
+
+.attemptsCard {
+  display: flex;
+  flex-direction: column;
+  border-radius: 15px;
+  background: var(--a-surface);
+  overflow: hidden;
+}
+
+.attemptsHead {
+  padding: 11px 14px 7px;
+  font-size: 12.5px;
+  letter-spacing: 0.2px;
+  text-transform: uppercase;
+  color: var(--a-text2);
+}
+
+.attemptRow {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 10px 14px;
+  border-top: 0.5px solid var(--a-hairline);
+}
+
+.attemptTile {
+  width: 30px;
+  height: 30px;
+  flex-shrink: 0;
+  border-radius: 9px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--a-font-mono);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.attemptBody {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.attemptTitle {
+  font-size: 14.5px;
+  letter-spacing: -0.35px;
+}
+
+.attemptWhen {
+  font-size: 12px;
+  color: var(--a-text2);
+}
+
+.attemptScore {
+  font-family: var(--a-font-mono);
+  font-size: 13.5px;
+  font-weight: 600;
+}

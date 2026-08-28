@@ -1,0 +1,35 @@
+@import './tokens.css';
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--a-bg);
+  color: var(--a-text);
+  font-family: var(--a-font-ui);
+  letter-spacing: -0.24px;
+  -webkit-font-smoothing: antialiased;
+  color-scheme: light dark;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+}
+
+a {
+  color: var(--a-accent);
+  text-decoration: none;
+}

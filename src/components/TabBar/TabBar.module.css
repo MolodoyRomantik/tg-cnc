@@ -1,0 +1,29 @@
+.bar {
+  flex-shrink: 0;
+  display: flex;
+  border-top: 0.5px solid var(--a-hairline);
+  background: var(--a-surface);
+  padding-bottom: 6px;
+}
+
+.tab {
+  flex: 1;
+  padding: 7px 0 4px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  font-family: inherit;
+}
+
+.glyph {
+  font-size: 16px;
+}
+
+.label {
+  font-size: 10.5px;
+  font-weight: 500;
+}

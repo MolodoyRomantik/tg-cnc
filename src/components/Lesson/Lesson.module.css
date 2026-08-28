@@ -1,0 +1,180 @@
+.page {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.scroll {
+  flex: 1;
+  overflow: auto;
+  padding: 15px 16px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 13px;
+}
+
+.scroll > * {
+  flex-shrink: 0;
+}
+
+.eyebrow {
+  font-family: var(--a-font-mono);
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  color: var(--a-accent);
+  margin-bottom: 5px;
+}
+
+.title {
+  margin: 0;
+  font-size: 25px;
+  line-height: 1.15;
+  font-weight: 700;
+  letter-spacing: -0.85px;
+  text-wrap: pretty;
+}
+
+.theoryCard {
+  border-radius: 15px;
+  background: var(--a-surface);
+  overflow: hidden;
+}
+
+.theoryHead {
+  padding: 11px 14px 8px;
+  font-size: 12.5px;
+  letter-spacing: 0.2px;
+  text-transform: uppercase;
+  color: var(--a-text2);
+}
+
+.theoryRow {
+  display: flex;
+  gap: 10px;
+  padding: 10px 14px;
+  border-top: 0.5px solid var(--a-hairline);
+}
+
+.theoryNum {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  margin-top: 1px;
+  border-radius: 7px;
+  background: var(--a-accent-soft);
+  color: var(--a-accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--a-font-mono);
+  font-size: 10.5px;
+  font-weight: 700;
+}
+
+.theoryText {
+  flex: 1;
+  font-size: 14.5px;
+  line-height: 1.4;
+  letter-spacing: -0.25px;
+  text-wrap: pretty;
+}
+
+.imageSlot {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.sectionLabel {
+  font-size: 12.5px;
+  letter-spacing: 0.2px;
+  text-transform: uppercase;
+  color: var(--a-text2);
+  padding-left: 3px;
+  margin-bottom: 7px;
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.tag {
+  padding: 6px 10px;
+  border-radius: 9px;
+  background: var(--a-surface);
+  font-family: var(--a-font-mono);
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--a-steel);
+}
+
+.infoCard {
+  border-radius: 15px;
+  background: var(--a-surface);
+  overflow: hidden;
+}
+
+.infoRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  font-size: 14.5px;
+  letter-spacing: -0.3px;
+}
+
+.infoLabel {
+  color: var(--a-text2);
+}
+
+.infoValue {
+  font-family: var(--a-font-mono);
+  font-weight: 600;
+}
+
+.tiles {
+  display: flex;
+  gap: 8px;
+}
+
+.tile {
+  flex: 1;
+  padding: 10px 12px;
+  border-radius: 14px;
+  background: var(--a-surface);
+}
+
+.tileValue {
+  font-family: var(--a-font-mono);
+  font-size: 19px;
+  font-weight: 600;
+  letter-spacing: -0.5px;
+}
+
+.tileLabel {
+  font-size: 11.5px;
+  color: var(--a-text2);
+}
+
+.footer {
+  flex-shrink: 0;
+  padding: 8px 16px 12px;
+}
+
+.startButton {
+  width: 100%;
+  height: 50px;
+  border: none;
+  border-radius: 14px;
+  background: var(--a-accent);
+  color: #fff;
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: -0.4px;
+  cursor: pointer;
+  font-family: inherit;
+}
