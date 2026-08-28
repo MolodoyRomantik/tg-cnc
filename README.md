@@ -1,32 +1,51 @@
-# React + TypeScript + Vite
+# CNC Тренажёр
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+Telegram Mini App для обучения программированию токарных станков с ЧПУ (стойка Fanuc 0i/21i).
+Формат — тест как экзамен ПДД: вопрос, 4 варианта, обязательный разбор после ответа.
+3 уровня × 4 урока, 99 вопросов.
 
-Currently, two official plugins are available:
+- Бот: [@cnc_trener_bot](https://t.me/cnc_trener_bot)
+- Приложение: https://molodoyromantik.github.io/tg-cnc/
+- API: https://tg-cnc-api.lbvfdgfdfgdf.workers.dev
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Структура
 
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the Oxlint configuration
-
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
-
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
+```
+src/            фронтенд (React + TypeScript + Vite)
+  data/         содержимое курса — единственный источник контента (curriculum.js оригинала)
+  components/   экраны: Home, Lesson, Quiz, Result, ReviewAnswer, Profile
+  state/        useProgress — прогресс/XP/серии, синхронизируется с API
+  telegram.ts   интеграция с Telegram WebApp (тема, BackButton, HapticFeedback, initData)
+worker/         бэкенд (Cloudflare Worker + D1), отдельный npm-пакет
+  src/index.ts        API: GET/POST /api/progress
+  src/telegramAuth.ts проверка подписи initData (HMAC), без нее прогресс не пишется
+  schema.sql          схема D1
 ```
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+## Деплой
+
+Полностью автоматический — деплой запускается пушем в `main`, руками ничего катить не нужно.
+
+- `.github/workflows/deploy.yml` — собирает фронтенд и публикует на GitHub Pages.
+- `.github/workflows/deploy-worker.yml` — тайпчекает и деплоит воркер (срабатывает только
+  при изменениях в `worker/**`).
+
+## Локальная разработка
+
+```bash
+npm install
+npm run dev          # фронтенд, http://localhost:5173
+
+cd worker
+npm install
+npm run dev           # воркер локально (wrangler dev)
+npm run typecheck
+```
+
+Прогресс синхронизируется только внутри настоящего Telegram-клиента (нужен подписанный
+`initData`) — при локальном открытии в браузере состояние живёт только в памяти вкладки.
+
+## Переменные и секреты
+
+Хранятся в GitHub Actions secrets (`CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID`) и в Cloudflare
+Worker secrets (`BOT_TOKEN`, см. `wrangler secret put`). В репозитории секретов нет.
