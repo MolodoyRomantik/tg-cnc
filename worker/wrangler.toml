@@ -17,3 +17,24 @@ namespace_id = "1001"
   [ratelimits.simple]
   limit = 60
   period = 60
+
+# Separate worker + D1 database for trying out changes (schema, logic) without touching real
+# user data. Deploy with `npm run deploy:staging`, migrate with `npm run db:migrate:staging`.
+[env.staging]
+name = "tg-cnc-api-staging"
+
+[[env.staging.d1_databases]]
+binding = "DB"
+database_name = "tg-cnc-db-staging"
+database_id = "5b9babd1-8d4b-40ad-8eb5-3cacc92e3525"
+
+[env.staging.vars]
+ALLOWED_ORIGIN = "https://molodoyromantik.github.io"
+
+[[env.staging.ratelimits]]
+name = "RATE_LIMITER"
+namespace_id = "1002"
+
+  [env.staging.ratelimits.simple]
+  limit = 60
+  period = 60
