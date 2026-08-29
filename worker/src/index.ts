@@ -1,14 +1,23 @@
 import { Hono } from 'hono';
 import { validateInitData } from './telegramAuth';
+import { askDeepSeek, type TutorContext, type TutorMessage } from './tutor';
 
 interface Env {
   DB: D1Database;
   BOT_TOKEN: string;
+  DEEPSEEK_API_KEY: string;
   ALLOWED_ORIGIN: string;
   RATE_LIMITER: RateLimit;
+  AI_RATE_LIMITER: RateLimit;
 }
 
 const PASS = 0.7;
+
+// Global (not per-user) ceiling on AI tutor calls per day — a blunt but simple safety net so
+// a bug or a burst of legitimate use can't run away with the API balance unnoticed.
+const AI_DAILY_CAP = 200;
+const MAX_TUTOR_HISTORY = 8;
+const MAX_TUTOR_MESSAGE_LENGTH = 500;
 
 // Question count per lesson, kept in sync with src/data/curriculum.ts — lets the worker
 // reject a lessonId that doesn't exist and a `total` that doesn't match reality, without
@@ -65,6 +74,9 @@ app.use('*', async (c, next) => {
   if (!success) return c.json({ error: 'rate limited' }, 429);
   await next();
 });
+
+// Unauthenticated — just proof the worker is up, for the uptime canary.
+app.get('/health', (c) => c.json({ status: 'ok' }));
 
 async function authenticate(c: { req: { header: (name: string) => string | undefined }; env: Env }): Promise<number | null> {
   const header = c.req.header('Authorization') ?? '';
@@ -175,6 +187,79 @@ app.post('/api/progress/attempt', async (c) => {
   ]);
 
   return c.json({ ok: true, lesson: { best, total, attempts, sumCorrect, sumTotal, passed, lastAt: now } });
+});
+
+function isTutorContext(value: unknown): value is TutorContext {
+  if (!value || typeof value !== 'object') return false;
+  const ctx = value as Record<string, unknown>;
+  return (
+    typeof ctx.question === 'string' &&
+    Array.isArray(ctx.options) &&
+    ctx.options.every((o) => typeof o === 'string') &&
+    typeof ctx.correctAnswer === 'string' &&
+    typeof ctx.chosenAnswer === 'string' &&
+    typeof ctx.explanation === 'string'
+  );
+}
+
+function sanitizeHistory(value: unknown): TutorMessage[] {
+  if (!Array.isArray(value)) return [];
+  return value
+    .filter(
+      (m): m is TutorMessage =>
+        !!m &&
+        typeof m === 'object' &&
+        (m.role === 'user' || m.role === 'assistant') &&
+        typeof m.content === 'string' &&
+        m.content.length <= MAX_TUTOR_MESSAGE_LENGTH,
+    )
+    .slice(-MAX_TUTOR_HISTORY);
+}
+
+app.post('/api/tutor', async (c) => {
+  const telegramId = await authenticate(c);
+  if (!telegramId) return c.json({ error: 'unauthorized' }, 401);
+
+  const { success } = await c.env.AI_RATE_LIMITER.limit({ key: String(telegramId) });
+  if (!success) return c.json({ error: 'rate limited' }, 429);
+
+  const today = new Date().toISOString().slice(0, 10);
+  const usage = await c.env.DB.prepare('SELECT request_count FROM ai_usage WHERE day = ?')
+    .bind(today)
+    .first<{ request_count: number }>();
+  if ((usage?.request_count ?? 0) >= AI_DAILY_CAP) {
+    return c.json({ error: 'daily limit reached' }, 429);
+  }
+
+  const body = await c.req
+    .json<{ context?: unknown; history?: unknown; message?: unknown }>()
+    .catch(() => null);
+  const message = typeof body?.message === 'string' ? body.message.trim() : '';
+
+  if (!body || !isTutorContext(body.context) || !message || message.length > MAX_TUTOR_MESSAGE_LENGTH) {
+    return c.json({ error: 'bad request' }, 400);
+  }
+  const history = sanitizeHistory(body.history);
+
+  let reply: string;
+  try {
+    reply = await askDeepSeek(c.env.DEEPSEEK_API_KEY, body.context, [
+      ...history,
+      { role: 'user', content: message },
+    ]);
+  } catch (err) {
+    console.error('DeepSeek call failed:', err);
+    return c.json({ error: 'tutor unavailable' }, 502);
+  }
+
+  await c.env.DB.prepare(
+    `INSERT INTO ai_usage (day, request_count) VALUES (?, 1)
+     ON CONFLICT (day) DO UPDATE SET request_count = request_count + 1`,
+  )
+    .bind(today)
+    .run();
+
+  return c.json({ reply });
 });
 
 export default app;

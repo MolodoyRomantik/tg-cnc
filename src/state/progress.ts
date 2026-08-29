@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { getInitDataRaw } from '../telegram';
+import { API_BASE } from '../lib/api';
 
 export const PASS = 0.7;
-const API_BASE = 'https://tg-cnc-api.lbvfdgfdfgdf.workers.dev';
 const XP_PER_CORRECT = 5;
 const XP_PASS_BONUS = 10;
 const XP_PER_LEVEL = 200;

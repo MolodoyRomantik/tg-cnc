@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import type { Lesson, Question } from '../../types/curriculum';
 import { ImagePlaceholder } from '../ImagePlaceholder/ImagePlaceholder';
+import { TutorChat } from '../TutorChat/TutorChat';
 import styles from './Quiz.module.css';
 
 const LETTERS = ['А', 'Б', 'В', 'Г'];
@@ -27,6 +28,7 @@ export function Quiz({ lesson, questions, onFinish, onAnswered }: QuizProps) {
   const isAnswered = chosen !== null;
   const isCorrect = isAnswered && chosen === current.a;
   const isLast = qIdx === total - 1;
+  const chosenText = chosen === null ? '' : current.o[chosen];
 
   function handleSelect(i: number) {
     if (isAnswered) return;
@@ -107,6 +109,15 @@ export function Quiz({ lesson, questions, onFinish, onAnswered }: QuizProps) {
                 <ImagePlaceholder height={130} />
               </div>
             )}
+            <TutorChat
+              context={{
+                question: current.q,
+                options: current.o,
+                correctAnswer: current.o[current.a],
+                chosenAnswer: chosenText,
+                explanation: current.e,
+              }}
+            />
           </div>
         )}
       </div>

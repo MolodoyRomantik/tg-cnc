@@ -18,6 +18,16 @@ namespace_id = "1001"
   limit = 60
   period = 60
 
+# Tighter, per-user limit on the AI tutor endpoint specifically — that one calls a paid API,
+# a plain flood limit isn't enough cost protection on its own.
+[[ratelimits]]
+name = "AI_RATE_LIMITER"
+namespace_id = "1003"
+
+  [ratelimits.simple]
+  limit = 6
+  period = 60
+
 # Separate worker + D1 database for trying out changes (schema, logic) without touching real
 # user data. Deploy with `npm run deploy:staging`, migrate with `npm run db:migrate:staging`.
 [env.staging]
@@ -37,4 +47,12 @@ namespace_id = "1002"
 
   [env.staging.ratelimits.simple]
   limit = 60
+  period = 60
+
+[[env.staging.ratelimits]]
+name = "AI_RATE_LIMITER"
+namespace_id = "1004"
+
+  [env.staging.ratelimits.simple]
+  limit = 6
   period = 60

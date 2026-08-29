@@ -1,5 +1,6 @@
 import type { Question } from '../../types/curriculum';
 import { ImagePlaceholder } from '../ImagePlaceholder/ImagePlaceholder';
+import { TutorChat } from '../TutorChat/TutorChat';
 import quizStyles from '../Quiz/Quiz.module.css';
 import styles from './ReviewAnswer.module.css';
 
@@ -53,6 +54,15 @@ export function ReviewAnswer({ question, chosenIndex, questionNumber, total, onB
               <ImagePlaceholder height={130} />
             </div>
           )}
+          <TutorChat
+            context={{
+              question: question.q,
+              options: question.o,
+              correctAnswer: question.o[question.a],
+              chosenAnswer: question.o[chosenIndex],
+              explanation: question.e,
+            }}
+          />
         </div>
       </div>
 
