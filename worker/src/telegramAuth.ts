@@ -23,7 +23,10 @@ function toHex(buf: ArrayBuffer): string {
 export async function validateInitData(
   initData: string,
   botToken: string,
-  maxAgeSeconds = 86400,
+  // Telegram re-issues initData fresh each time the Mini App is opened from the bot, so a
+  // short window doesn't hurt normal use — it just shrinks how long a leaked/replayed
+  // initData string would stay usable.
+  maxAgeSeconds = 3600,
 ): Promise<TelegramUser | null> {
   const params = new URLSearchParams(initData);
   const hash = params.get('hash');

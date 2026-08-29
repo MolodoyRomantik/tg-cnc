@@ -5,9 +5,28 @@ interface Env {
   DB: D1Database;
   BOT_TOKEN: string;
   ALLOWED_ORIGIN: string;
+  RATE_LIMITER: RateLimit;
 }
 
 const PASS = 0.7;
+
+// Question count per lesson, kept in sync with src/data/curriculum.ts — lets the worker
+// reject a lessonId that doesn't exist and a `total` that doesn't match reality, without
+// needing to duplicate the whole curriculum content server-side.
+const LESSON_QUESTION_COUNTS: Record<string, number> = {
+  '1.1': 8,
+  '1.2': 8,
+  '1.3': 8,
+  '1.4': 8,
+  '2.1': 8,
+  '2.2': 8,
+  '2.3': 9,
+  '2.4': 8,
+  '3.1': 8,
+  '3.2': 8,
+  '3.3': 8,
+  '3.4': 10,
+};
 
 interface LessonProgressRow {
   lesson_id: string;
@@ -34,6 +53,16 @@ app.use('*', async (c, next) => {
   c.header('Access-Control-Allow-Headers', 'Authorization, Content-Type');
   c.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
   if (c.req.method === 'OPTIONS') return c.body(null, 204);
+  await next();
+});
+
+// Coarse, pre-auth flood guard: one IP hammering the API gets a 429 before we even bother
+// checking its signature. This is deliberately generous (60/min) — real abuse protection is
+// the initData check below; this just stops raw junk traffic from burning CPU/DB time.
+app.use('*', async (c, next) => {
+  const ip = c.req.header('CF-Connecting-IP') ?? 'unknown';
+  const { success } = await c.env.RATE_LIMITER.limit({ key: ip });
+  if (!success) return c.json({ error: 'rate limited' }, 429);
   await next();
 });
 
@@ -100,7 +129,17 @@ app.post('/api/progress/attempt', async (c) => {
   const lessonId = body?.lessonId;
   const score = body?.score;
   const total = body?.total;
-  if (!lessonId || typeof score !== 'number' || typeof total !== 'number' || total <= 0 || score < 0 || score > total) {
+  const expectedTotal = lessonId ? LESSON_QUESTION_COUNTS[lessonId] : undefined;
+  if (
+    !lessonId ||
+    expectedTotal === undefined ||
+    typeof score !== 'number' ||
+    typeof total !== 'number' ||
+    !Number.isInteger(score) ||
+    total !== expectedTotal ||
+    score < 0 ||
+    score > total
+  ) {
     return c.json({ error: 'bad request' }, 400);
   }
 
