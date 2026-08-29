@@ -1,0 +1,22 @@
+name: Uptime canary
+
+on:
+  schedule:
+    - cron: '0 6 * * *'
+  workflow_dispatch:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check frontend (GitHub Pages)
+        run: |
+          code=$(curl -s -o /dev/null -w '%{http_code}' https://molodoyromantik.github.io/tg-cnc/)
+          echo "frontend -> $code"
+          [ "$code" = "200" ]
+
+      - name: Check API (Cloudflare Worker)
+        run: |
+          code=$(curl -s -o /dev/null -w '%{http_code}' https://tg-cnc-api.lbvfdgfdfgdf.workers.dev/health)
+          echo "api -> $code"
+          [ "$code" = "200" ]
