@@ -133,6 +133,30 @@ app.get('/api/progress', async (c) => {
   });
 });
 
+// Separate vocabulary progress: original lesson results remain available unchanged.
+const TERM_IDS = new Set('blank part chip tool chuck spindle jaw turret diameter radius face axis feed speed depth coolant chamfer groove thread bore tolerance roughness runout allowance'.split(' ').map(id => `term-${id}`));
+interface MemoryRow { term_id: string; step: number; due: number; updated: number; correct: number; }
+app.get('/api/terms', async (c) => {
+  const telegramId = await authenticate(c);
+  if (!telegramId) return c.json({ error: 'unauthorized' }, 401);
+  const result = await c.env.DB.prepare('SELECT term_id, step, due, updated, correct FROM term_memory WHERE telegram_id = ?').bind(telegramId).all<MemoryRow>();
+  return c.json(Object.fromEntries(result.results.map(row => [row.term_id, { id: row.term_id, step: row.step, due: row.due, updated: row.updated, correct: !!row.correct }])));
+});
+app.post('/api/terms', async (c) => {
+  const telegramId = await authenticate(c);
+  if (!telegramId) return c.json({ error: 'unauthorized' }, 401);
+  const body: unknown = await c.req.json().catch(() => null);
+  if (!Array.isArray(body) || body.length < 1 || body.length > 24) return c.json({ error: 'bad request' }, 400);
+  const now = Date.now();
+  for (const item of body) {
+    if (!item || !TERM_IDS.has(item.id) || !Number.isInteger(item.step) || item.step < -1 || item.step > 3 || typeof item.correct !== 'boolean' || !Number.isSafeInteger(item.updated) || item.updated < 0 || item.updated > now + 300000 || !Number.isSafeInteger(item.due) || item.due < item.updated || item.due > item.updated + 22 * 86400000) return c.json({ error: 'bad request' }, 400);
+  }
+  await c.env.DB.batch(body.map(item => c.env.DB.prepare(
+    'INSERT INTO term_memory (telegram_id, term_id, step, due, updated, correct) VALUES (?, ?, ?, ?, ?, ?) ON CONFLICT(telegram_id, term_id) DO UPDATE SET step=excluded.step, due=excluded.due, updated=excluded.updated, correct=excluded.correct WHERE excluded.updated > term_memory.updated'
+  ).bind(telegramId, item.id, item.step, item.due, item.updated, item.correct ? 1 : 0)));
+  return c.json({ ok: true });
+});
+
 app.post('/api/progress/attempt', async (c) => {
   const telegramId = await authenticate(c);
   if (!telegramId) return c.json({ error: 'unauthorized' }, 401);
