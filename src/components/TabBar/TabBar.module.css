@@ -1,14 +1,16 @@
 .bar {
   flex-shrink: 0;
   display: flex;
-  border-top: 0.5px solid var(--a-hairline);
+  border-top: 1px solid var(--a-hairline);
   background: var(--a-surface);
-  padding-bottom: 6px;
+  padding: 4px 16px 8px;
+  gap: 8px;
 }
 
 .tab {
   flex: 1;
-  padding: 7px 0 4px;
+  padding: 6px 0 4px;
+  border-radius: 12px;
   background: none;
   border: none;
   cursor: pointer;
@@ -20,10 +22,12 @@
 }
 
 .glyph {
-  font-size: 16px;
+  font-family: var(--a-font-mono);
+  font-size: 18px;
 }
 
 .label {
-  font-size: 10.5px;
-  font-weight: 500;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .15px;
 }

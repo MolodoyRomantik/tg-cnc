@@ -15,8 +15,8 @@ export function TabBar({ active, onHome, onProfile }: TabBarProps) {
         style={{ color: active === 'home' ? 'var(--a-accent)' : 'var(--a-text3)' }}
         onClick={onHome}
       >
-        <span className={styles.glyph}>▦</span>
-        <span className={styles.label}>Уроки</span>
+        <span className={styles.glyph}>⌁</span>
+        <span className={styles.label}>Обучение</span>
       </button>
       <button
         type="button"
@@ -24,7 +24,7 @@ export function TabBar({ active, onHome, onProfile }: TabBarProps) {
         style={{ color: active === 'profile' ? 'var(--a-accent)' : 'var(--a-text3)' }}
         onClick={onProfile}
       >
-        <span className={styles.glyph}>◍</span>
+        <span className={styles.glyph}>◉</span>
         <span className={styles.label}>Профиль</span>
       </button>
     </div>

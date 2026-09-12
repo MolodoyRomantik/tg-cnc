@@ -5,7 +5,8 @@
   align-items: center;
   justify-content: space-between;
   padding: 0 16px;
-  border-bottom: 0.5px solid var(--a-hairline);
+  border-bottom: 1px solid var(--a-hairline);
+  background: color-mix(in srgb, var(--a-bg) 92%, transparent);
 }
 
 .back {
@@ -23,9 +24,11 @@
 }
 
 .title {
-  font-size: 17px;
-  font-weight: 600;
-  letter-spacing: -0.4px;
+  font-family: var(--a-font-mono);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: .4px;
+  text-transform: uppercase;
 }
 
 .dots {

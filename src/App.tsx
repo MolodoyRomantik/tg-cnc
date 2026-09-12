@@ -108,7 +108,9 @@ function App() {
 
   return (
     <div className={styles.shell}>
-      <NavBar title={titles[screen]} showBack={screen !== 'home' && screen !== 'profile'} onBack={goBack} />
+      {screen !== 'home' && (
+        <NavBar title={titles[screen]} showBack={screen !== 'profile'} onBack={goBack} />
+      )}
 
       {screen === 'home' && <Home levels={LEVELS} progress={progress} onOpenLesson={openLesson} />}
 

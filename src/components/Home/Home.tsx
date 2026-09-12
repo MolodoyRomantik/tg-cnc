@@ -1,131 +1,28 @@
 import type { Level } from '../../types/curriculum';
-import {
-  computeAccuracy,
-  computeSolved,
-  computeStreak,
-  type ProgressState,
-} from '../../state/progress';
+import { computeAccuracy, computeLevel, computeSolved, computeStreak, computeXp, type ProgressState } from '../../state/progress';
 import styles from './Home.module.css';
 
-interface HomeProps {
-  levels: Level[];
-  progress: ProgressState;
-  onOpenLesson: (levelIdx: number, lessonIdx: number) => void;
-}
+interface HomeProps { levels: Level[]; progress: ProgressState; onOpenLesson: (levelIdx: number, lessonIdx: number) => void; }
+
+const paths = [
+  { icon: '⌁', title: 'Термины ЧПУ', text: 'Словарь станочника', tone: 'orange', live: true },
+  { icon: '</>', title: 'Программирование', text: 'Fanuc ISO · скоро', tone: 'blue', live: false },
+  { icon: '◉', title: 'Наладка станка', text: 'Инструмент и режимы · скоро', tone: 'green', live: false },
+  { icon: '⌑', title: 'Чтение чертежей', text: 'Размеры и допуски · скоро', tone: 'violet', live: false },
+] as const;
 
 export function Home({ levels, progress, onOpenLesson }: HomeProps) {
   const lessonTotal = levels.reduce((n, lv) => n + lv.lessons.length, 0);
-  const qTotal = levels.reduce((n, lv) => n + lv.lessons.reduce((m, ls) => m + ls.questions.length, 0), 0);
-
-  const streak = computeStreak(progress);
-  const solved = computeSolved(progress);
-  const accuracy = computeAccuracy(progress);
-
+  const streak = computeStreak(progress); const solved = computeSolved(progress); const accuracy = computeAccuracy(progress);
+  const xp = computeXp(progress); const { level, into, goal } = computeLevel(xp);
+  const completed = levels.reduce((n, item) => n + item.lessons.filter((lesson) => progress.lessons[lesson.id]?.passed).length, 0);
   let next: { levelIdx: number; lessonIdx: number; title: string; id: string } | null = null;
-  outer: for (let li = 0; li < levels.length; li++) {
-    for (let lsi = 0; lsi < levels[li].lessons.length; lsi++) {
-      const lesson = levels[li].lessons[lsi];
-      if (!progress.lessons[lesson.id]?.passed) {
-        next = { levelIdx: li, lessonIdx: lsi, title: lesson.title, id: lesson.id };
-        break outer;
-      }
-    }
-  }
-
-  return (
-    <div className={styles.page}>
-      <div>
-        <h1 className={styles.title}>Токарное ЧПУ</h1>
-        <p className={styles.subtitle}>
-          Стойка Fanuc · {lessonTotal} уроков, {qTotal} вопросов
-        </p>
-      </div>
-
-      <div className={styles.statsRow}>
-        <div className={styles.statCard}>
-          <div className={styles.statValue} style={{ color: 'var(--a-accent)' }}>
-            {streak}
-          </div>
-          <div className={styles.statLabel}>дней подряд</div>
-        </div>
-        <div className={styles.statCard}>
-          <div className={styles.statValue}>{solved}</div>
-          <div className={styles.statLabel}>вопросов</div>
-        </div>
-        <div className={styles.statCard}>
-          <div className={styles.statValue} style={{ color: 'var(--a-ok)' }}>
-            {accuracy !== null ? `${accuracy}%` : '—'}
-          </div>
-          <div className={styles.statLabel}>точность</div>
-        </div>
-      </div>
-
-      {next && (
-        <button
-          type="button"
-          className={styles.continueCard}
-          onClick={() => onOpenLesson(next!.levelIdx, next!.lessonIdx)}
-        >
-          <span className={styles.continueTile}>{next.id}</span>
-          <span className={styles.continueBody}>
-            <span className={styles.continueEyebrow}>Продолжить</span>
-            <span className={styles.continueTitle}>{next.title}</span>
-          </span>
-          <span className={styles.chevron}>›</span>
-        </button>
-      )}
-
-      {levels.map((level, li) => {
-        const doneCount = level.lessons.filter((ls) => progress.lessons[ls.id]?.passed).length;
-        const closed = doneCount === level.lessons.length;
-        return (
-          <div key={level.id} className={styles.section}>
-            <div className={styles.sectionHead}>
-              <span className={styles.sectionTitle} style={{ color: closed ? 'var(--a-ok)' : 'var(--a-text2)' }}>
-                {level.title}
-              </span>
-              <span className={styles.sectionProgress}>
-                {doneCount}/{level.lessons.length}
-              </span>
-            </div>
-            <div className={styles.lessonCard}>
-              {level.lessons.map((lesson, lsi) => {
-                const lp = progress.lessons[lesson.id];
-                const mark = lp?.passed ? '✓' : lp ? `${lp.best}/${lp.total}` : '›';
-                const markColor = lp?.passed ? 'var(--a-ok)' : lp ? 'var(--a-accent)' : 'var(--a-text3)';
-                return (
-                  <button
-                    key={lesson.id}
-                    type="button"
-                    className={styles.lessonRow}
-                    style={{ borderTop: lsi === 0 ? 'none' : undefined }}
-                    onClick={() => onOpenLesson(li, lsi)}
-                  >
-                    <span
-                      className={styles.lessonTile}
-                      style={{
-                        background: lp?.passed ? 'var(--a-ok-soft)' : lp ? 'var(--a-accent-soft)' : 'var(--a-fill)',
-                        color: lp?.passed ? 'var(--a-ok)' : lp ? 'var(--a-accent)' : 'var(--a-text2)',
-                      }}
-                    >
-                      {lesson.id}
-                    </span>
-                    <span className={styles.lessonBody}>
-                      <span className={styles.lessonTitle}>{lesson.title}</span>
-                      <span className={styles.lessonMeta}>
-                        {lesson.questions.length} вопросов · {lesson.est}
-                      </span>
-                    </span>
-                    <span className={styles.lessonMark} style={{ color: markColor }}>
-                      {mark}
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-        );
-      })}
-    </div>
-  );
+  outer: for (let li = 0; li < levels.length; li++) for (let lsi = 0; lsi < levels[li].lessons.length; lsi++) { const lesson = levels[li].lessons[lsi]; if (!progress.lessons[lesson.id]?.passed) { next = { levelIdx: li, lessonIdx: lsi, title: lesson.title, id: lesson.id }; break outer; } }
+  return <main className={styles.page}>
+    <section className={styles.hero}><div className={styles.heroTop}><div><span className={styles.kicker}>CNC ACADEMY</span><h1 className={styles.title}>Твой путь<br />к станку</h1></div><div className={styles.rank}><span>{level}</span><small>уровень</small></div></div><div className={styles.machine} aria-hidden="true"><div className={styles.machineScreen}><i /><i /><i /></div><div className={styles.machineChuck}><b /></div><div className={styles.machineLines} /></div><div className={styles.xpLine}><span>Опыт <b>{xp} XP</b></span><span>{into}/{goal}</span></div><div className={styles.track}><span style={{ width: `${Math.max(5, (into / goal) * 100)}%` }} /></div></section>
+    <section className={styles.stats}><div><b className={styles.fire}>◆</b><strong>{streak}</strong><span>дней подряд</span></div><div><b>{solved}</b><span>решено задач</span></div><div><b>{accuracy === null ? '—' : `${accuracy}%`}</b><span>точность</span></div></section>
+    {next && <button className={styles.continue} type="button" onClick={() => onOpenLesson(next!.levelIdx, next!.lessonIdx)}><span className={styles.play}>▶</span><span><small>ПРОДОЛЖИТЬ ОБУЧЕНИЕ</small><strong>{next.title}</strong><em>Урок {next.id} · 5–7 минут</em></span><i>→</i></button>}
+    <section className={styles.paths}><div className={styles.sectionHead}><h2>Направления</h2><span>{completed}/{lessonTotal} уроков</span></div><div className={styles.pathGrid}>{paths.map((path) => <button type="button" key={path.title} className={`${styles.path} ${styles[path.tone]} ${!path.live ? styles.locked : ''}`} onClick={() => path.live && next && onOpenLesson(next.levelIdx, next.lessonIdx)}><span className={styles.pathIcon}>{path.live ? path.icon : '🔒'}</span><strong>{path.title}</strong><small>{path.text}</small>{path.live && <span className={styles.pathProgress}>{completed}/{lessonTotal}</span>}</button>)}</div></section>
+    <section className={styles.map}><div className={styles.sectionHead}><h2>Карта пути</h2><span>Токарное ЧПУ</span></div><div className={styles.mapCard}>{levels.map((item, index) => { const done = item.lessons.filter((lesson) => progress.lessons[lesson.id]?.passed).length; return <button key={item.id} type="button" className={styles.mapRow} onClick={() => onOpenLesson(index, 0)}><span className={styles.mapNum}>0{index + 1}</span><span className={styles.mapText}><strong>{item.title.replace(/^Уровень \d+ · /, '')}</strong><small>{done}/{item.lessons.length} уроков завершено</small></span><span className={styles.mapArrow}>→</span></button>; })}</div></section>
+  </main>;
 }
